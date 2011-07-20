@@ -90,22 +90,24 @@ void daemonize() {
     }
 
     /* Change the file mode mask */
-    umask(027);
+    umask( 027 );
 
     /* Change the current working directory */
-    if ((chdir(TMPDIR)) < 0) {
+    if (( chdir(TMPDIR )) < 0) {
         /* Log the failure */
         syslog(LOG_ERR, "Could not change working directory to /\n");
       exit(EXIT_FAILURE);
     }
 
-    lfp=open(LOCK_FILE, O_RDWR|O_CREAT, 0640);
-    if (lfp<0) exit(EXIT_FAILURE); /* can not open */
-    if (lockf(lfp,F_TLOCK,0)<0) exit(EXIT_SUCCESS); /* can not lock */
+    lfp=open( LOCK_FILE, O_RDWR | O_CREAT, 0640);
+    if ( lfp < 0 ) exit(EXIT_FAILURE); /* can not open */
+    if ( lockf( lfp, F_TLOCK, 0) < 0) exit(EXIT_SUCCESS); /* can not lock */
     /* only first instance continues */
 
-    sprintf(str,"%d\n",getpid());
-    write(lfp,str,strlen(str)); /* record pid to lockfile */
+    sprintf( str, "%d\n", getpid() );
+    write( lfp, str, strlen(str) ); /* record pid to lockfile */
+
+    log_message( LOCK_FILE, str );
 
     /* Setup Signal handlers */
     signal(SIGHUP,signal_handler); /* hangup signal */
@@ -130,7 +132,7 @@ void daemonize() {
 
 }  /*   End daemonize()  */
 
-int process(void) {
+void process(void) {
 
   syslog(LOG_NOTICE, "Running \n");
 
@@ -146,7 +148,6 @@ int main(int argc, char *argv[]) {
 
         int c_opt;
 
-        long elapsed;
         int cycle_time;
 
     /* End Declrations */
